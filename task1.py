@@ -5,6 +5,8 @@ from astropy.constants import M_earth, R_earth
 from astropy.units.si import sday
 from sympy.utilities.lambdify import lambdify
 import time
+from scipy.integrate import ode
+from matplotlib import pyplot as plt
 
 start = time.time()
 
@@ -47,9 +49,89 @@ print(left_l)
 
 second_derivatives = solve([left_phi, left_l], diff(phi(t), t, t), diff(l(t), t, t))
 dphi, dl = symbols('dphi dl')
-dphi_tt = lambdify((phi(t), dphi, l(t), dl), second_derivatives[diff(phi(t), t, t)]
-                   .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl))
-dl_tt = lambdify((phi(t), dphi, l(t), dl), second_derivatives[diff(l(t), t, t)]
-                 .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl))
+print(second_derivatives[diff(phi(t), t, t)]
+      .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl))
+print(second_derivatives[diff(l(t), t, t)]
+      .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl))
+dphi_tt = lambdify((phi(t), dphi(t), l(t), dl(t)), second_derivatives[diff(phi(t), t, t)]
+                   .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl(t)))
+dl_tt = lambdify((phi(t), dphi(t), l(t), dl(t)), second_derivatives[diff(l(t), t, t)]
+                 .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl(t)))
+
+k = 2.
+l_max = 30 * 1.e3
+
+
+def dl_l(l):
+    if l < l_max:
+        return 5. + k / 2.
+    else:
+        return 0
+
+
+def dq(t, q):
+    phi = q[0]
+    dphi = q[1]
+    l = q[2]
+    dl = dl_l(l)
+    ddphi = dphi_tt(phi, dphi, l, dl)
+    ddl = dl_tt(phi, dphi, l, dl)
+    result = np.append(dphi, ddphi)
+    result = np.append(result, dl)
+    result = np.append(result, ddl)
+    return result
+
+
+q_0 = [0, 0, l_0, dl_l(l_0)]
+t_0 = 0.
+solver = ode(dq).set_integrator('dopri5', nsteps=1)
+solver.set_initial_value(q_0, t_0)
+
+sol_t = []
+sol_q = []
+tk = 5000
+while solver.t < tk:
+    solver.integrate(tk, step=True)
+    sol_t.append(solver.t)
+    sol_q.append(solver.y)
+
+sol_t = np.array(sol_t).reshape((len(sol_t), 1))
+sol_q = np.array(sol_q)
+sol_phi = sol_q[:, 0]
+sol_dphi = sol_q[:, 1]
+sol_l = sol_q[:, 2]
+sol_dl = sol_q[:, 3]
+
+plt.figure()
+plt.plot(sol_t, sol_phi, label='phi(t)')
+plt.grid()
+plt.legend()
+plt.ylabel('phi(t)')
+plt.xlabel('t')
+plt.savefig('images/phi.png')
+
+plt.figure()
+plt.plot(sol_t, sol_dphi, label='dphi(t)')
+plt.grid()
+plt.legend()
+plt.ylabel('dphi(t)')
+plt.xlabel('t')
+plt.savefig('images/dphi.png')
+
+plt.figure()
+plt.plot(sol_t, sol_l, label='l(t)')
+plt.grid()
+plt.legend()
+plt.ylabel('l(t)')
+plt.xlabel('t')
+plt.savefig('images/l.png')
+
+plt.figure()
+plt.plot(sol_t, sol_dl, label='dl(t)')
+plt.grid()
+plt.legend()
+plt.ylabel('dl(t)')
+plt.xlabel('t')
+plt.savefig('images/dl.png')
 
 print("Elapsed {} seconds".format(time.time() - start))
