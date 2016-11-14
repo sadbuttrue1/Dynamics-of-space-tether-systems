@@ -99,7 +99,7 @@ while solver.t < tk:
     sol_t.append(solver.t)
     sol_q.append(solver.y)
 
-sol_t = np.array(sol_t).reshape((len(sol_t), 1))
+sol_t = np.array(sol_t)
 sol_q = np.array(sol_q)
 sol_phi = sol_q[:, 0]
 sol_dphi = sol_q[:, 1]
@@ -113,5 +113,18 @@ plot_to_file(sol_t, sol_dphi, 't', 'dphi')
 plot_to_file(sol_t, sol_l, 't', 'l')
 
 plot_to_file(sol_t, sol_dl, 't', 'dl')
+
+last_index = np.where(np.logical_and(sol_t > 1600, sol_t <= 3300))
+phi_cut = sol_phi[last_index[0][0]:last_index[0][-1]]
+t_cut = sol_t[last_index[0][0]:last_index[0][-1]]
+t_phi_poly = np.polyfit(phi_cut, t_cut, 5)
+t_phi_func = np.poly1d(t_phi_poly)
+print(t_phi_func(0))
+p = np.linspace(-0.7, 0, 100)
+plot_to_file(p, t_phi_func(p), 'phi', 't')
+phi_t_poly = np.polyfit(sol_t, sol_t, 5)
+phi_t_func = np.poly1d(phi_t_poly)
+p = np.linspace(0, 5000, 100)
+plot_to_file(p, phi_t_func(p), 't', 'phi_')
 
 print("Elapsed {} seconds".format(time.time() - start))
