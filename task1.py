@@ -8,6 +8,17 @@ import time
 from scipy.integrate import ode
 from matplotlib import pyplot as plt
 
+
+def plot_to_file(x, y, variable_name, function_name):
+    plt.figure()
+    plt.plot(x, y, label='{}({})'.format(function_name, variable_name))
+    plt.grid()
+    plt.legend()
+    plt.ylabel('{}({})'.format(function_name, variable_name))
+    plt.xlabel(variable_name)
+    plt.savefig('images/{}.png'.format(function_name))
+
+
 start = time.time()
 
 omega_earth = 2 * np.pi / sday.si.scale
@@ -44,15 +55,8 @@ left_l = simplify((diff((diff(L, diff(l(t), t))), t) - (diff(L, l(t))))
                   .subs(diff(theta(t), t), sqrt(µ / r(t) ** 3)).subs(r(t), R_earth.value + H)
                   .subs(Derivative(0, t), 0))
 
-print(left_phi)
-print(left_l)
-
 second_derivatives = solve([left_phi, left_l], diff(phi(t), t, t), diff(l(t), t, t))
 dphi, dl = symbols('dphi dl')
-print(second_derivatives[diff(phi(t), t, t)]
-      .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl))
-print(second_derivatives[diff(l(t), t, t)]
-      .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl))
 dphi_tt = lambdify((phi(t), dphi(t), l(t), dl(t)), second_derivatives[diff(phi(t), t, t)]
                    .subs(diff(phi(t), t), dphi(t)).subs(diff(l(t), t), dl(t)))
 dl_tt = lambdify((phi(t), dphi(t), l(t), dl(t)), second_derivatives[diff(l(t), t, t)]
@@ -102,36 +106,12 @@ sol_dphi = sol_q[:, 1]
 sol_l = sol_q[:, 2]
 sol_dl = sol_q[:, 3]
 
-plt.figure()
-plt.plot(sol_t, sol_phi, label='phi(t)')
-plt.grid()
-plt.legend()
-plt.ylabel('phi(t)')
-plt.xlabel('t')
-plt.savefig('images/phi.png')
+plot_to_file(sol_t, sol_phi, 't', 'phi')
 
-plt.figure()
-plt.plot(sol_t, sol_dphi, label='dphi(t)')
-plt.grid()
-plt.legend()
-plt.ylabel('dphi(t)')
-plt.xlabel('t')
-plt.savefig('images/dphi.png')
+plot_to_file(sol_t, sol_dphi, 't', 'dphi')
 
-plt.figure()
-plt.plot(sol_t, sol_l, label='l(t)')
-plt.grid()
-plt.legend()
-plt.ylabel('l(t)')
-plt.xlabel('t')
-plt.savefig('images/l.png')
+plot_to_file(sol_t, sol_l, 't', 'l')
 
-plt.figure()
-plt.plot(sol_t, sol_dl, label='dl(t)')
-plt.grid()
-plt.legend()
-plt.ylabel('dl(t)')
-plt.xlabel('t')
-plt.savefig('images/dl.png')
+plot_to_file(sol_t, sol_dl, 't', 'dl')
 
 print("Elapsed {} seconds".format(time.time() - start))
