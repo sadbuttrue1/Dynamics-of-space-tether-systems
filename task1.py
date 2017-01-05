@@ -30,6 +30,7 @@ m_2 = 50
 c = 0
 l_0 = 2000
 H = 250 * 1.e3
+R = R_earth.value + H
 r, theta, t, l, phi = symbols('r theta t l phi')
 r_1_x = r(t) * cos(theta(t))
 v_1_x = diff(r_1_x, t)
@@ -42,17 +43,19 @@ v_2_x = diff(r_2_x, t)
 r_2_y = r_1_y - l(t) * cos(alpha)
 v_2_y = diff(r_2_y, t)
 v_2_2 = (v_2_x ** 2 + v_2_y ** 2)
+d_theta = sqrt(µ / r(t) ** 3)
+
 T = (m_1 * v_1_2 / 2 + m_2 * v_2_2 / 2)
 Pe = (
     -m_1 * µ / sqrt(r_1_x ** 2 + r_1_y ** 2) - m_2 * µ / sqrt(r_2_x ** 2 + r_2_y ** 2) + c / 2.0 * (l(t) - l_0) ** 2)
 L = (T - Pe)
 left_phi = simplify((diff((diff(L, diff(phi(t), t))), t) - (diff(L, phi(t))))
                     .subs(diff(r(t), t), 0).subs(diff(diff(theta(t), t), t), 0)
-                    .subs(diff(theta(t), t), sqrt(µ / r(t) ** 3)).subs(r(t), R_earth.value + H)
+                    .subs(diff(theta(t), t), d_theta).subs(r(t), R)
                     .subs(Derivative(0, t), 0))
 left_l = simplify((diff((diff(L, diff(l(t), t))), t) - (diff(L, l(t))))
                   .subs(diff(r(t), t), 0).subs(diff(diff(theta(t), t), t), 0)
-                  .subs(diff(theta(t), t), sqrt(µ / r(t) ** 3)).subs(r(t), R_earth.value + H)
+                  .subs(diff(theta(t), t), d_theta).subs(r(t), R)
                   .subs(Derivative(0, t), 0))
 
 second_derivatives = solve([left_phi, left_l], diff(phi(t), t, t), diff(l(t), t, t))
@@ -110,21 +113,33 @@ plot_to_file(sol_t, sol_phi, 't', 'phi')
 
 plot_to_file(sol_t, sol_dphi, 't', 'dphi')
 
-plot_to_file(sol_t, sol_l, 't', 'l')
-
-plot_to_file(sol_t, sol_dl, 't', 'dl')
-
 last_index = np.where(np.logical_and(sol_t > 1600, sol_t <= 3300))
 phi_cut = sol_phi[last_index[0][0]:last_index[0][-1]]
 t_cut = sol_t[last_index[0][0]:last_index[0][-1]]
 t_phi_poly = np.polyfit(phi_cut, t_cut, 5)
 t_phi_func = np.poly1d(t_phi_poly)
-print(t_phi_func(0))
-p = np.linspace(-0.7, 0, 100)
-plot_to_file(p, t_phi_func(p), 'phi', 't')
-phi_t_poly = np.polyfit(sol_t, sol_t, 5)
-phi_t_func = np.poly1d(phi_t_poly)
-p = np.linspace(0, 5000, 100)
-plot_to_file(p, phi_t_func(p), 't', 'phi_')
+dphi_t_poly = np.polyfit(sol_t, sol_dphi, 5)
+dphi_t_func = np.poly1d(dphi_t_poly)
+t_phi_0 = t_phi_func(0)
+l_ = l_0 + dl_l(l_0) * t_phi_0
+theta_ = float(d_theta.subs(r(t), R)) * t_phi_0
+r_2_x_ = float(r_2_x.subs(l(t), l_).subs(phi(t), 0).subs(theta(t), theta_).subs(r(t), R))
+r_2_y_ = float(r_2_y.subs(l(t), l_).subs(phi(t), 0).subs(theta(t), theta_).subs(r(t), R))
+v_2_x_ = float(v_2_x
+               .subs(diff(phi(t), t), dphi_t_func(t_phi_0)).subs(diff(theta(t), t), d_theta).subs(diff(r(t), t), 0)
+               .subs(diff(l(t), t), dl_l(l_))
+               .subs(l(t), l_).subs(phi(t), 0).subs(theta(t), theta_).subs(r(t), R))
+v_2_y_ = float(v_2_y
+               .subs(diff(phi(t), t), dphi_t_func(t_phi_0)).subs(diff(theta(t), t), d_theta).subs(diff(r(t), t), 0)
+               .subs(diff(l(t), t), dl_l(l_))
+               .subs(l(t), l_).subs(phi(t), 0).subs(theta(t), theta_).subs(r(t), R))
+
+c = r_2_x_ * v_2_y_ - r_2_y_ * v_2_x_
+p = c ** 2 / µ
+h = (v_2_x_ ** 2 + v_2_y_ ** 2) - 2 * µ / np.sqrt(r_2_x_ ** 2 + r_2_y_ ** 2)
+f = µ ** 2 + h * (c ** 2)
+e = np.sqrt(f) / µ
+r_p = p / (1 + e)
+print(r_p)
 
 print("Elapsed {} seconds".format(time.time() - start))
