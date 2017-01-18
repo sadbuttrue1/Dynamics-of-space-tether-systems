@@ -23,6 +23,7 @@ R = R_e + h
 
 phi, t = symbols('phi, t')
 r_c = Matrix([R * sin(phi(t)), R * cos(phi(t))])
+r_c = Matrix([R / 2 * cos(phi(t)) + R_e * cos(omega_earth * t), R / 2 * sin(phi(t)) + R_e * sin(omega_earth * t)])
 r_c_n = sqrt(r_c[0] ** 2 + r_c[1] ** 2)
 v_c = diff(r_c, t)
 v_c_n = sqrt((omega_earth * R_e + h / 2 * (diff(phi(t), t) + omega_earth) * cos(phi(t))) ** 2 +
