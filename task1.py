@@ -7,6 +7,7 @@ from sympy.utilities.lambdify import lambdify
 import time
 from scipy.integrate import ode
 from matplotlib import pyplot as plt
+import os
 
 
 def plot_to_file(x, y, variable_name, function_name):
@@ -16,6 +17,9 @@ def plot_to_file(x, y, variable_name, function_name):
     plt.legend()
     plt.ylabel('{}({})'.format(function_name, variable_name))
     plt.xlabel(variable_name)
+    dir = 'images/task1'
+    if not os.path.isdir(dir):
+        os.makedirs(dir)
     plt.savefig('images/task1/{}.png'.format(function_name))
 
 
