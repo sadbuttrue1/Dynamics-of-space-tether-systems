@@ -1,0 +1,30 @@
+\section{Исследование движения спускаемого груза}
+
+Определим радиус-векторы носителя и груза:
+\begin{equation*}
+	r_1 = (r * \cos \theta, r * \sin \theta),
+\end{equation*}
+\begin{equation*}
+	r_2 = r_1 + (l*\sin \alpha, - l * \cos \alpha),
+\end{equation*},
+где $\alpha=\phi + \theta - \frac{\pi}{2}$.
+
+Запишем кинетическую и потенциальную энергии для получения лагранжиана $L = T - \Pi$:
+\begin{equation*}
+	T = \frac{m_1 \mathbf{v_1}^2}{2} + \frac{m_2 \mathbf{v_2}^2}{2},
+\end{equation*}
+\begin{equation*}
+	\Pi = \frac{-m_1 \mu}{\mathbf{r_1}} + \frac{-m_2 \mu}{\mathbf{r_2}} + \frac{c}{2 (l-l_0)^2}.
+\end{equation*}
+
+Решив уравнение Лагранжа второго рода для $\phi$ и $\frac{d\phi}{dt}$, получим следующие зависимости:
+\begin{figure}[H]
+	\center{\includegraphics[scale=0.6]{task1/phi.png}}
+	\caption{Изменение угла троса}
+\end{figure}
+\begin{figure}[H]
+	\center{\includegraphics[scale=0.6]{task1/dphi.png}}
+	\caption{Изменение скорости угла троса}
+\end{figure}
+
+Для полученных зависимостей перигей орбиты отделения $r_p = 79 595.0335$м.

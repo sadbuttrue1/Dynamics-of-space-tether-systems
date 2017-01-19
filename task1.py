@@ -46,8 +46,7 @@ v_2_2 = (v_2_x ** 2 + v_2_y ** 2)
 d_theta = sqrt(mu / r(t) ** 3)
 
 T = (m_1 * v_1_2 / 2 + m_2 * v_2_2 / 2)
-Pe = (
-    -m_1 * mu / sqrt(r_1_x ** 2 + r_1_y ** 2) - m_2 * mu / sqrt(r_2_x ** 2 + r_2_y ** 2) + c / 2.0 * (l(t) - l_0) ** 2)
+Pe = -m_1 * mu / sqrt(r_1_x ** 2 + r_1_y ** 2) - m_2 * mu / sqrt(r_2_x ** 2 + r_2_y ** 2) + c / 2.0 * (l(t) - l_0) ** 2
 L = (T - Pe)
 left_phi = simplify((diff((diff(L, diff(phi(t), t))), t) - (diff(L, phi(t))))
                     .subs(diff(r(t), t), 0).subs(diff(diff(theta(t), t), t), 0)

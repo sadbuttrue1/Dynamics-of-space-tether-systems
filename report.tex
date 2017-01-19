@@ -1,0 +1,164 @@
+\documentclass[12pt,a4paper]{extarticle}
+\usepackage{extsizes}
+\usepackage{cmap} % для кодировки шрифтов в pdf
+%\documentclass[a4paper,12pt]{article} %размер бумаги устанавливаем А4, шрифт 12пунктов
+\usepackage[utf8]{inputenc}%включаем свою кодировку: koi8-r или utf8 в UNIX, cp1251 в Windows
+\usepackage[T2A, T1]{fontenc}
+\usepackage[english,russian]{babel}%используем русский и английский языки с переносами
+\usepackage{amssymb,amsfonts,amsmath,mathtext,cite,enumerate,amsthm,mathenv} %подключаем нужные пакеты расширений
+\numberwithin{equation}{section}
+\usepackage{graphicx} %хотим вставлять в диплом рисунки?
+\usepackage{indentfirst} % Красная строка
+\graphicspath{{images/}}%путь к рисункам
+\usepackage{hyperref}
+\usepackage{framed}
+\usepackage{color} %% это для отображения цвета в коде
+\usepackage{listings} %% собственно, это и есть пакет listingsb
+\usepackage{ucs}
+\usepackage{latexsym}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{ulem}
+\usepackage{csvsimple}
+
+\frenchspacing
+%----------------ЗАГОЛОВКИ---------------------------
+\usepackage{titlesec}
+
+\titleformat{\chapter}[display]
+    {\filcenter}
+    {\MakeUppercase{\chaptertitlename} \thechapter}
+    {8pt}
+    {\bfseries}{}
+ 
+\titleformat{\section}
+    {\centering\normalsize\bfseries}
+    {\thesection}
+    {1em}{\MakeUppercase}
+ 
+\titleformat{\subsection}
+    {\normalsize\bfseries}
+    {\thesubsection}
+    {1em}{}
+
+% Настройка вертикальных и горизонтальных отступов
+%\titlespacing*{\chapter}{0pt}{-30pt}{8pt}
+\titlespacing*{\section}{\parindent}{*4}{*4}
+\titlespacing*{\subsection}{\parindent}{*4}{*4}
+%------------------------------------------------------
+
+%---------------------ПОЛЯ-----------------------------
+\usepackage{geometry}
+\geometry{left=3cm}
+\geometry{right=1.5cm}
+\geometry{top=2.4cm}
+\geometry{bottom=2.4cm}
+
+
+\makeatletter
+\renewcommand{\@biblabel}[1]{#1.} % Заменяем библиографию с квадратных скобок на точку:
+\makeatother
+
+\makeatletter
+
+
+\def\x@multispan#1{%
+  \global\let\@tempa\@empty
+  \@multicnt#1\relax
+  \loop\ifnum\@multicnt>\@ne
+  \xdef\@tempa{\@tempa\kern\dimen@i\hfill&\omit}%
+   \advance\@multicnt\m@ne
+  \repeat
+  \@tempa\kern\dimen@i\hfill}
+
+
+\long\def\xmulticolumn#1#2#3{%
+ \omit
+ \begingroup
+   \def\@addamp{\if@firstamp \@firstampfalse \else
+                \@preamerr 5\fi}%
+  \@mkpream{#2}\@addtopreamble\@empty
+  \endgroup
+  \def\@sharp{#3}%
+  \setbox\z@\hbox{{\@preamble}}%
+\global\dimen@i\wd\z@
+\global\divide\dimen@i#1\relax
+ \ignorespaces
+\x@multispan{#1}}
+\makeatother
+
+\linespread{1.3} % полуторный интервал
+%\renewcommand{\baselinestretch}{1.5}
+\renewcommand{\theenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumi}{\arabic{enumi}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\theenumii}{.\arabic{enumii}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumii}{\arabic{enumi}.\arabic{enumii}.}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\theenumiii}{.\arabic{enumiii}}% Меняем везде перечисления на цифра.цифра
+\renewcommand{\labelenumiii}{\arabic{enumi}.\arabic{enumii}.\arabic{enumiii}.}% Меняем везде перечисления на цифра.цифра
+%\renewcommand{\figurename}{Рисунок} 
+\addto\captionsrussian{
+\def\figurename{Рисунок}
+\renewcommand{\refname}
+    {Список использованных источников}
+}
+\usepackage[labelsep=space]{caption}
+\DeclareCaptionLabelSeparator{bar}{ - }
+\captionsetup{
+  labelsep=bar
+}
+
+\usepackage{floatrow}
+\DeclareFloatFont{tiny}{\tiny}
+\floatsetup[table]{font=footnotesize,capposition=top}
+
+%\usepackage{sectsty}
+
+%\allsectionsfont{\centering}
+
+
+\lstset{ %
+language=Python,                 % выбор языка для подсветки (здесь это Python)
+basicstyle=\scriptsize\sffamily, % размер и начертание шрифта для подсветки кода
+numberstyle=\tiny,           % размер шрифта для номеров строк
+stepnumber=1,                   % размер шага между двумя номерами строк
+numbersep=5pt,                % как далеко отстоят номера строк от подсвечиваемого кода
+backgroundcolor=\color{white}, % цвет фона подсветки - используем \usepackage{color}
+showspaces=false,            % показывать или нет пробелы специальными отступами
+showstringspaces=false,      % показывать или нет пробелы в строках
+showtabs=false,             % показывать или нет табуляцию в строках
+tabsize=2,                 % размер табуляции по умолчанию равен 2 пробелам
+captionpos=t,              % позиция заголовка вверху [t] или внизу [b] 
+breaklines=true,           % автоматически переносить строки (да\нет)
+breakatwhitespace=false, % переносить строки только если есть пробел
+escapeinside={\%*}{*)}   % если нужно добавить комментарии в коде
+}
+
+%\usepackage[explicit]{titlesec}
+%\usepackage{textcase}
+%\usepackage{microtype}
+%\titleformat{\section}
+  %{\normalfont\Large\scshape}{\large\thesection}{1em}{\textls{\MakeTextLowercase{#1}}}
+\usepackage{tocloft}
+\renewcommand{\cfttoctitlefont}{\hfil \normalfont\Large\bfseries\MakeUppercase}
+
+\usepackage{inconsolata}
+
+\begin{document}
+\input{title}% это титульный лист
+\setcounter{page}{2}
+\newpage
+\input{task}
+\newpage
+\tableofcontents % это оглавление, которое генерируется автоматически
+\newpage
+\input{introduction}
+\newpage
+\input{task1}
+\newpage
+\input{findings}
+\newpage
+\input{bibliography}
+\newpage
+\input{appendix}
+\end{document}
