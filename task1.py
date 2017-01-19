@@ -16,14 +16,14 @@ def plot_to_file(x, y, variable_name, function_name):
     plt.legend()
     plt.ylabel('{}({})'.format(function_name, variable_name))
     plt.xlabel(variable_name)
-    plt.savefig('images/{}.png'.format(function_name))
+    plt.savefig('images/task1/{}.png'.format(function_name))
 
 
 start = time.time()
 
 omega_earth = 2 * np.pi / sday.si.scale
 M_e = M_earth.value
-µ = G * M_e
+mu = G * M_e
 
 m_1 = 6000
 m_2 = 50
@@ -43,11 +43,11 @@ v_2_x = diff(r_2_x, t)
 r_2_y = r_1_y - l(t) * cos(alpha)
 v_2_y = diff(r_2_y, t)
 v_2_2 = (v_2_x ** 2 + v_2_y ** 2)
-d_theta = sqrt(µ / r(t) ** 3)
+d_theta = sqrt(mu / r(t) ** 3)
 
 T = (m_1 * v_1_2 / 2 + m_2 * v_2_2 / 2)
 Pe = (
-    -m_1 * µ / sqrt(r_1_x ** 2 + r_1_y ** 2) - m_2 * µ / sqrt(r_2_x ** 2 + r_2_y ** 2) + c / 2.0 * (l(t) - l_0) ** 2)
+    -m_1 * mu / sqrt(r_1_x ** 2 + r_1_y ** 2) - m_2 * mu / sqrt(r_2_x ** 2 + r_2_y ** 2) + c / 2.0 * (l(t) - l_0) ** 2)
 L = (T - Pe)
 left_phi = simplify((diff((diff(L, diff(phi(t), t))), t) - (diff(L, phi(t))))
                     .subs(diff(r(t), t), 0).subs(diff(diff(theta(t), t), t), 0)
@@ -135,10 +135,10 @@ v_2_y_ = float(v_2_y
                .subs(l(t), l_).subs(phi(t), 0).subs(theta(t), theta_).subs(r(t), R))
 
 c = r_2_x_ * v_2_y_ - r_2_y_ * v_2_x_
-p = c ** 2 / µ
-h = (v_2_x_ ** 2 + v_2_y_ ** 2) - 2 * µ / np.sqrt(r_2_x_ ** 2 + r_2_y_ ** 2)
-f = µ ** 2 + h * (c ** 2)
-e = np.sqrt(f) / µ
+p = c ** 2 / mu
+h = (v_2_x_ ** 2 + v_2_y_ ** 2) - 2 * mu / np.sqrt(r_2_x_ ** 2 + r_2_y_ ** 2)
+f = mu ** 2 + h * (c ** 2)
+e = np.sqrt(f) / mu
 r_p = p / (1 + e)
 print(r_p)
 
